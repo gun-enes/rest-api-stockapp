@@ -6,7 +6,7 @@ const stock_route = require('./routes/stock_routes');
 const transaction_route = require('./routes/transaction_routes')
 
 // Initialize the app
-const app = express();
+const app = express(); 
 app.use(bodyParser.json());
 
 mongoose.connect('mongodb://mongo:27017/my_database');
