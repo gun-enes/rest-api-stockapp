@@ -19,6 +19,16 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.get('/:code', async (req, res) => {
+    try {
+        const stock = await Stock.findOne({ code: req.params.code });
+        if (!stock) return res.status(404).json({ message: 'Stock not found' });
+        res.json(stock);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Get all stock entries
 router.get('/', async (req, res) => {
     try {
@@ -30,15 +40,15 @@ router.get('/', async (req, res) => {
 });
 
 // Get a specific stock by ID
-router.get('/:id', async (req, res) => {
-    try {
-        const stock = await Stock.findById(req.params.id);
-        if (!stock) return res.status(404).json({ message: 'Stock not found' });
-        res.json(stock);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+// router.get('/:id', async (req, res) => {
+//     try {
+//         const stock = await Stock.findById(req.params.id);
+//         if (!stock) return res.status(404).json({ message: 'Stock not found' });
+//         res.json(stock);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
 
 // Update a specific stock by ID
 router.patch('/:id', async (req, res) => {
