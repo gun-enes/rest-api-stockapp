@@ -1,0 +1,25 @@
+services:
+  api:
+    build:
+      context: ./api
+    container_name: api-container
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+volumes:
+  mongo-data:
+networks:
+  app-network:
+
