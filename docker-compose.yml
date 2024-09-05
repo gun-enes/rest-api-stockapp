@@ -9,6 +9,15 @@ services:
       - app-network
     depends_on:
       - mongo
+  stock-fetcher:
+    build:
+      context: ./stock-fetcher
+    container_name: stock-fetcher-container
+    networks:
+      - app-network
+    depends_on:
+      - api
+      - mongo
   mongo:
     image: mongo:latest
     container_name: mongo

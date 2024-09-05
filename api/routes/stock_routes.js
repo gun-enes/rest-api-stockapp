@@ -39,6 +39,14 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.delete('/delete-all', async (req, res) => {
+    try {
+        const result = await Stock.deleteMany({});
+        res.json({ message: `Deleted ${result.deletedCount} stock(s)` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 // Get a specific stock by ID
 // router.get('/:id', async (req, res) => {
 //     try {
@@ -51,13 +59,10 @@ router.get('/', async (req, res) => {
 // });
 
 // Update a specific stock by ID
-router.patch('/:id', async (req, res) => {
-    try {
-        const stock = await Stock.findById(req.params.id);
+router.patch('/:code', async (req, res) => {
+    try { 
+        const stock = await Stock.findOne({ code: req.params.code });
         if (!stock) return res.status(404).json({ message: 'Stock not found' });
-
-        if (req.body.code !== undefined) stock.code = req.body.code;
-        if (req.body.title !== undefined) stock.title = req.body.title;
         if (req.body.date !== undefined) stock.date = req.body.date;
         if (req.body.price !== undefined) stock.price = req.body.price;
         if (req.body.change !== undefined) stock.change = req.body.change;
