@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-//const user_routes = require('./routes/user'); // Import the routes
 const stock_route = require('./routes/stock_routes');
 const transaction_route = require('./routes/transaction_routes')
+const record_route = require('./routes/record_routes'); 
 
 // Initialize the app
 const app = express(); 
@@ -28,6 +28,7 @@ mongoose.connection.on('disconnected', () => {
 //app.use('/stocks', stock_route);
 app.use('/transactions', transaction_route);
 app.use('/stocks', stock_route);
+app.use('/records', record_route);
 
 // Start the server
 app.listen(3000, () => {
