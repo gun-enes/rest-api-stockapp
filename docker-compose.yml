@@ -18,6 +18,15 @@ services:
     depends_on:
       - api
       - mongo
+  create-record:
+    build:
+      context: ./create-record
+    container_name: create-record-container
+    networks:
+      - app-network
+    depends_on:
+      - api
+      - mongo 
   mongo:
     image: mongo:latest
     container_name: mongo

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const stock_route = require('./routes/stock_routes');
 const transaction_route = require('./routes/transaction_routes')
 const record_route = require('./routes/record_routes'); 
+const report_route = require('./routes/report_routes'); 
 
 // Initialize the app
 const app = express(); 
@@ -29,6 +30,7 @@ mongoose.connection.on('disconnected', () => {
 app.use('/transactions', transaction_route);
 app.use('/stocks', stock_route);
 app.use('/records', record_route);
+app.use('/reports', report_route);
 
 // Start the server
 app.listen(3000, () => {

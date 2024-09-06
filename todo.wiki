@@ -1,0 +1,33 @@
+===== front-end =====
+1) dolar bazlı portföy
+2) bist bazlı portföy
+3) 
+
+
+
+
+====== backend ====== 
+1) tek nodelu cluster kurulacak
+2) portföy için routelar yazılacak
+3) records container ı her gün 12de - web-scraping ise 10 ile 18 arasında dkde bir çalışmalı
+4) finansallar kaydedilmeli 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
