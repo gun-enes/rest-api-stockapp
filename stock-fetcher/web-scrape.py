@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import time
+from websocket import create_connection
+
 class StockData:
     def __init__(self):
         self.code = ""
@@ -32,34 +34,64 @@ def get_data():
         temp.title = titles1[i + 1]
         temp.price = float(titles1[i + 2].replace(',', '.'))
         temp.change = float(titles1[i + 6].replace(',', '.'))
-        
         stock_data.append(temp)
     
     return stock_data
-def post_data_to_localhost(stock_data):
-    base_url = 'http://api:3000/stocks'
-    headers = {'Content-Type': 'application/json'}
+
+def post_data_to_localhost(operation="PATCH"):
+    ws_url = "ws://localhost:3000"  # WebSocket server URL
     control = 1
-    for stock in stock_data:
-        data = stock.to_dict()
-        retries = 5
-        url = f"{base_url}/{data['code']}"
-        while retries:
-            try:
-                response = requests.patch(url, headers=headers, data=json.dumps(data))
-                if response.status_code >= 200 and response.status_code < 300:
-                    break
-                else:
+
+    try:
+        # Establish a WebSocket connection
+        ws = create_connection(ws_url)
+        print("WebSocket connection established")
+        
+        while True:
+            time.sleep(1)
+            stock_data = get_data()
+            for stock in stock_data:
+                data = stock.to_dict()
+                retries = 5
+
+                # Prepare the WebSocket message with operation and stock data
+                message = json.dumps({
+                    "operation": operation,
+                    "resource": "stocks",
+                    "data": data
+                })
+                
+                while retries:
+                    try:
+                        # Send the message to the WebSocket server
+                        ws.send(message)
+                        print(f"Sent {operation} request for stock {data['code']}")
+                        
+                        # Optional: If the server sends a response, receive it
+                        response = ws.recv()
+                        print(f"Received response: {response}")
+                        
+                        # Exit the retry loop after a successful send
+                        break
+                    except Exception as e:
+                        print(f"Failed to send {operation} request for {data['code']}, retrying... {str(e)}")
+                        retries -= 1
+                        time.sleep(5)
+                        
+                if retries == 0:
                     control = 0
-                    break
-            except requests.exceptions.ConnectionError:
-                print("API is not ready yet, retrying...")
-                retries -= 1
-                time.sleep(5)  # w
-    print("Successfully posted all the data!")
+                    print(f"Failed to send {operation} request for {data['code']} after multiple attempts.")
+            
+        print("Successfully processed all the data!")
+    except Exception as e:
+        print(f"WebSocket connection failed: {str(e)}")
+        control = 0
+    finally:
+        # Close the WebSocket connection
+        if ws:
+            ws.close()
+            print("WebSocket connection closed")
 
-# Fetch stock data
-data = get_data()
 
-# Post stock data one by one to localhost:3000
-post_data_to_localhost(data)
+
+post_data_to_localhost()

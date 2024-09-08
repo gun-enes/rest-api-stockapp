@@ -12,8 +12,8 @@ const WebSocket = require('ws');
 const app = express();
 app.use(bodyParser.json());
 
-//mongoose.connect('mongodb://mongo:27017/my_database');
-mongoose.connect('mongodb://localhost:27017/my_database');
+mongoose.connect('mongodb://mongo:27017/my_database');
+//mongoose.connect('mongodb://localhost:27017/my_database');
 
 // Check the connection status
 mongoose.connection.on('connected', () => {

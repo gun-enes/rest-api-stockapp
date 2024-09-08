@@ -17,7 +17,7 @@ class Record:
         return {
             "code": self.code,
             "price": self.price,
-            "date": self.date.isoformat()  # To convert date to a string format
+            "date": self.date.strftime('%Y-%m-%d') # To convert date to a string format
         }
 
 
@@ -42,7 +42,7 @@ def get_data():
 
 
 def post_data_to_localhost(stock_data):
-    url = 'http://localhost:3000/records'
+    url = 'http://api:3000/records'
     headers = {'Content-Type': 'application/json'}
     control = 1
     for stock in stock_data:
@@ -52,18 +52,23 @@ def post_data_to_localhost(stock_data):
             try:
                 response = requests.post(url, headers=headers, data=json.dumps(data))
                 if response.status_code >= 200 and response.status_code < 300:
+                    print(f"Record posted successfully: {data}")
                     break
                 else:
+                    print(f"Failed to post record: {data}")
+                    print(f"Status Code: {response.status_code}")
+                    print(f"Response: {response.text}")  # Print the response from the server
                     control = 0
                     break
             except requests.exceptions.ConnectionError:
                 print("API is not ready yet, retrying...")
                 retries -= 1
-                time.sleep(5)  # w
+                time.sleep(5)
     if control == 1:
         print("Successfully posted all records!")
     else:
         print("Post attempt failed!")
+
 # Fetch stock data
 data = get_data()
 
