@@ -77,6 +77,11 @@ wss.on('connection', (ws) => {
                     await Stock.deleteOne({ code: data.code });
                     responseMessage = `Stock data for ${data.code} deleted.`;
                     break;
+                case 'GET_ALL':
+                    // Delete a stock entry
+                    const stocks = await Stock.find();
+                    responseMessage = stocks;
+                    break;
                 
                 default:
                     responseMessage = 'Unknown operation.';
