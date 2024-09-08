@@ -12,14 +12,33 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:code', async (req, res) => {
+router.get('/code/:code', async (req, res) => {
     try {
         const records = await Records.find({ code: req.params.code });
-        res.status(200).json(stocks);
+        res.status(200).json(records);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
+router.get('/date/:date', async (req, res) => {
+    try {
+        const records = await Records.find({ date: req.params.date });
+        res.status(200).json(records);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+router.delete('/delete-all', async (req, res) => {
+    try {
+        const result = await Record.deleteMany({});
+        res.json({ message: `Deleted ${result.deletedCount} record(s)` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
 router.get('/search', async (req, res) => {
     const { code, date } = req.query; // Assuming date is provided as a query parameter
     try {

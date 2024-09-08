@@ -11,9 +11,13 @@ const recordSchema = new Schema({
         required: true
     },
     date: {
-        type: Date,
+        type: String,
         required: true,
     },
 })
 
+//recordSchema.pre('save', function (next) {
+//    this.date = this.date.toISOString().split('T')[0];  // Convert to YYYY-MM-DD format
+//    next();
+//});
 module.exports = mongoose.model('record', recordSchema);
