@@ -3,7 +3,7 @@ from websocket import create_connection
 import json
 
 def post_data_to_localhost(operation="GET"):
-    ws_url = "ws://api:3000"  # WebSocket server URL
+    ws_url = "ws://54.235.247.243:3000"  # WebSocket server URL
     control = 1
 
     try:

@@ -15,6 +15,8 @@ app.use(bodyParser.json());
 mongoose.connect('mongodb://mongo:27017/my_database');
 //mongoose.connect('mongodb://localhost:27017/my_database');
 
+
+
 // Check the connection status
 mongoose.connection.on('connected', () => {
     console.log('Successfully connected to MongoDB');
@@ -28,11 +30,14 @@ mongoose.connection.on('disconnected', () => {
     console.log('Disconnected from MongoDB');
 });
 
+
 // Use the user routes
 app.use('/transactions', transaction_route);
 app.use('/stocks', stock_route);
 app.use('/records', record_route);
 app.use('/reports', report_route);
+
+
 
 // Start the HTTP server
 const server = app.listen(3000, () => {
@@ -44,58 +49,82 @@ const wss = new WebSocket.Server({ server });
 
 // Handle WebSocket connections
 // Handle WebSocket connections
+// wss.on('connection', (ws) => {
+//     console.log('New client connected');
+
+//     // Handle incoming messages
+//     ws.on('message', async (message) => {
+//         const { operation, resource, data } = JSON.parse(message);
+//         let responseMessage;
+
+//         try {
+//             switch (operation) {
+//                 case 'POST':
+//                     // Create a new stock entry
+//                     await Stock.create(data);
+//                     responseMessage = `Stock data for ${data.code} created.`;
+//                     break;
+                
+//                 case 'PATCH':
+//                     // Update an existing stock entry
+//                     await Stock.updateOne({ code: data.code }, data, { upsert: true });
+//                     responseMessage = `Stock data for ${data.code} updated.`;
+//                     break;
+                
+//                 case 'GET':
+//                     // Retrieve stock data
+//                     const stock = await Stock.findOne({ code: data.code });
+//                     responseMessage = stock ? stock : `Stock data for ${data.code} not found.`;
+//                     break;
+                
+//                 case 'DELETE':
+//                     // Delete a stock entry
+//                     await Stock.deleteOne({ code: data.code });
+//                     responseMessage = `Stock data for ${data.code} deleted.`;
+//                     break;
+//                 case 'GET_ALL':
+//                     // Delete a stock entry
+//                     const stocks = await Stock.find();
+//                     responseMessage = stocks;
+//                     break;
+                
+//                 default:
+//                     responseMessage = 'Unknown operation.';
+//             }
+//         } catch (error) {
+//             responseMessage = `Error handling ${operation} operation: ${error.message}`;
+//         }
+
+//         // Send the response back to the client
+//         ws.send(JSON.stringify({ operation, result: responseMessage }));
+//     });
+
+//     // Handle the client disconnecting
+//     ws.on('close', () => {
+//         console.log('Client disconnected');
+//     });
+// });
+
 wss.on('connection', (ws) => {
-    console.log('New client connected');
+    console.log('A new client connected');
 
-    // Handle incoming messages
-    ws.on('message', async (message) => {
-        const { operation, resource, data } = JSON.parse(message);
-        let responseMessage;
-
-        try {
-            switch (operation) {
-                case 'POST':
-                    // Create a new stock entry
-                    await Stock.create(data);
-                    responseMessage = `Stock data for ${data.code} created.`;
-                    break;
-                
-                case 'PATCH':
-                    // Update an existing stock entry
-                    await Stock.updateOne({ code: data.code }, data, { upsert: true });
-                    responseMessage = `Stock data for ${data.code} updated.`;
-                    break;
-                
-                case 'GET':
-                    // Retrieve stock data
-                    const stock = await Stock.findOne({ code: data.code });
-                    responseMessage = stock ? stock : `Stock data for ${data.code} not found.`;
-                    break;
-                
-                case 'DELETE':
-                    // Delete a stock entry
-                    await Stock.deleteOne({ code: data.code });
-                    responseMessage = `Stock data for ${data.code} deleted.`;
-                    break;
-                case 'GET_ALL':
-                    // Delete a stock entry
-                    const stocks = await Stock.find();
-                    responseMessage = stocks;
-                    break;
-                
-                default:
-                    responseMessage = 'Unknown operation.';
+    // Listen for messages from the client
+    ws.on('message', (message) => {
+        const decodedMessage = message.toString(); // Ensure it's treated as a string
+        console.log(`Received: ${decodedMessage}`);
+        
+        // Broadcast the message to all connected clients
+        wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(decodedMessage); // Send as text
             }
-        } catch (error) {
-            responseMessage = `Error handling ${operation} operation: ${error.message}`;
-        }
-
-        // Send the response back to the client
-        ws.send(JSON.stringify({ operation, result: responseMessage }));
+        });
     });
 
-    // Handle the client disconnecting
+    // Handle when a client disconnects
     ws.on('close', () => {
-        console.log('Client disconnected');
+        console.log('A client disconnected');
     });
 });
+
+
